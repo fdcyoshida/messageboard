@@ -1,7 +1,10 @@
 <?php
 ?>
+
 <div>
-    <h1>Regisration</h1>
+    <h1>Registration</h1>
+
+    <?php echo $this->Html->link('Logout', array('controller' => 'users', 'action' => 'logout')); ?>
 
     <form action="create" method="post">
         <label for="User_name">Name:</label>

@@ -4,6 +4,8 @@ App::uses('AppController', 'Controller');
 class UsersController extends AppController {
     public $helpers = array('Html', 'Form');
 
+    public $uses = array('User');
+
     public function register() {
     }
 
@@ -12,13 +14,26 @@ class UsersController extends AppController {
             $userData = $this->request->data;
 
             if ($this->User->save($userData)) {
-                $this->Session->setFlash('User registration successful.');
-                $this->redirect($this->request->referer());
+                $this->Flash->success('User registration successful.');
+                $this->redirect(array('controller' => 'users', 'action' => 'login'));
             } else {
-                $this->Session->setFlash('User registration failed.');
+                $this->Flash->error('User registration failed.');
                 $this->redirect($this->request->referer());
             }
         }
     }
 
+    public function login() {
+        if ($this->request->is('post')) {
+            if ($this->Auth->login()) {
+                return $this->redirect($this->Auth->redirect());
+            } else {
+                $this->Flash->error(__('Invalid email or password, try again'));
+            }
+        }
+    }
+
+    public function logout() {
+        $this->redirect($this->Auth->logout());
+    }
 }
