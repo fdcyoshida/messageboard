@@ -1,10 +1,11 @@
-<h2>Login</h2>
-<form action="<?php echo $this->Html->url(array('controller' => 'users', 'action' => 'login')); ?>" method="post">
-    <label for="User_email">Email:</label>
-    <input type="text" id="User_email" name="email">
-
-    <label for="User_password">Password:</label>
-    <input type="password" id="User_password" name="password">
-
-    <input type="submit" value="Login">
-</form>
+<div class="users form">
+    <?php echo $this->Flash->render('auth'); ?>
+    <?php echo $this->Form->create('User'); ?>
+        <fieldset>
+            <legend><?php echo __('Login'); ?></legend>
+            <?php echo $this->Form->input('email', array('label' => 'Email'));
+            echo $this->Form->input('password', array('label' => 'Password'));
+        ?>
+        </fieldset>
+    <?php echo $this->Form->end(__('Login')); ?>
+</div>
