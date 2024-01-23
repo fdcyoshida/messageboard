@@ -51,10 +51,9 @@ class UserProfilesController extends AppController {
     }
 
     public function update() {
-        var_dump($this->request->data);
         if ($this->request->is('post')) {
             $this->User->begin();
-    
+            
             try {
                 $userData = $this->request->data['User'];
                 $userProfileData = $this->request->data['UserProfile'];
@@ -62,6 +61,8 @@ class UserProfilesController extends AppController {
                 $userId = $this->Auth->user('id');
                 $existingUserProfile = $this->UserProfile->findByUserId($userId);
 
+                $image = $this->handleImageUpload();
+                $userProfileData['img'] = $image;
     
                 $userProfileData['id'] = $existingUserProfile['UserProfile']['id'];
                 if ($this->UserProfile->save($userProfileData)) {
@@ -101,6 +102,7 @@ class UserProfilesController extends AppController {
         ));
         return $userProfileData;
     }
+//ここの確認        $uploadPath = WWW_ROOT . 'uploads/';だと行ける。けど画像が表示されない
 
     private function handleImageUpload() {
         $file = $this->request->data['UserProfile']['image'];

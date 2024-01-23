@@ -24,7 +24,7 @@ echo $this->Form->create('UserProfile', array(
 <input type="text" name="UserProfile[hobby]" value="<?php echo $userProfile['UserProfile']['hobby']; ?>">
 
 <label for="UserProfileImage">Profile Image:</label>
-<input type="file" name="UserProfile[image]">
+<?php echo $this->Form->input('image', array('type' => 'file', 'id' => 'imageInput')); ?>
 
 <input type="submit" value="Update">
 
