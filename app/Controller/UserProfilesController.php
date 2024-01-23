@@ -6,52 +6,57 @@ class UserProfilesController extends AppController {
     public $uses = array('UserProfile', 'User');
 
     public function new() {
+        $this->set('userName', $this->setUserName());
     }
 
     public function create() {
-        $id = $this->Auth->user('id');
         if ($this->request->is('post')) {
-            if ($this->UserProfile->save($this->request->data)) {
-                $this->Flash->success('Profile created successfully.');
-                return $this->redirect(array('controller' => 'users', 'action' => 'login'));
-            } else {
+            $userId = $this->Auth->user('id');
+
+            $image = $this->handleImageUpload();
+            $this->request->data['UserProfile']['user_id'] = $userId;
+            $this->request->data['UserProfile']['img'] = $image;
+
+            $this->request->data['User']['id'] = $userId;
+            $this->request->data['User']['name'] = $this->request->data['User']['name'];
+
+            $this->User->begin();
+
+            try {
+                if ($this->UserProfile->save($this->request->data['UserProfile']) &&
+                    $this->User->save($this->request->data['User'])) {
+
+                    $this->User->commit();
+                    $this->Flash->success('Profile created successfully.');
+                    $this->redirect(array('controller' => 'users', 'action' => 'login'));
+                } else {
+                    $this->User->rollback();
+                    $this->Flash->error('Failed to create profile.');
+                }
+            } catch (Exception $e) {
+                $this->User->rollback();
                 $this->Flash->error('Failed to create profile.');
             }
         }
-        if (array_key_exists('UserImage', $this->request->data)) {
-            $this->changeImage();
-        }
-    
-        $this->set('user', $this->Auth->user());
     }
 
-    public function changeImage() {
-		$id = $this->Auth->user('id');
+    private function setUserName() {
+        $userId = $this->Auth->user('id');
+        $userData = $this->User->findById($userId);
+        return isset($userData['User']['name']) ? $userData['User']['name'] : '';
+    }
 
-		$fileOK = $this->uploadFiles(array(
-				'folder' => 'img/uploads', 
-				'formdata' => array($this->request->data['UserImage']['image-upload'])
-			));
-		$image = NULL;
+    private function handleImageUpload() {
+        $file = $this->request->data['UserProfile']['image'];
+        $uploadPath = WWW_ROOT . 'img/uploads/';
+        $filename = uniqid() . '_' . $file['name'];
 
-		//check if image passes checkers
-		if(array_key_exists('filename', $fileOK)) {
-			//$this->deletePrevImage('img/uploads');
+        if (move_uploaded_file($file['tmp_name'], $uploadPath . $filename)) {
+            return 'uploads/' . $filename;
+        }
 
-			$image = $fileOK['filename'];
-		}
-
-		//check if image had errors
-		if (array_key_exists('errors', $fileOK)) {
-			$this->Session->setFlash(implode('<br>',$fileOK['errors']),'default', array(), 'account');
-		}
-
-		$this->UserProfile->validate = array();
-        $this->UserProfile->read(array('img', 'img_dir'), array('UserProfile.user_id' => $id));
-		$this->UserProfile->set(array('img' => $image, 'img_dir' => null));
-		$res = $this->UserProfile->save();
-
-		return $this->redirect(myTools::getUrl() . '/user/account');
-	}
+        return null;
+    }
 }
+
 

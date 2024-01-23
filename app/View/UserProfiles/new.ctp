@@ -1,44 +1,55 @@
-<?php echo $this->Form->create('UserProfile', array('type' => 'file', 'url' => array('controller' => 'user_profiles', 'action' => 'create'))); ?>
+<?php
+echo $this->Form->create('UserProfile', array(
+    'type' => 'file',
+    'url' => array('controller' => 'user_profiles', 'action' => 'create'),
+    'enctype' => 'multipart/form-data'
+));
+?>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("#imageInput").change(function(){
+        readURL(this);
+    });
 
-    <fieldset>
-        <legend>Create Profile</legend>
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
 
-        <label for="UserProfileImg">Profile Image:</label>
-        <?php echo $this->Form->file('img'); ?>
-        <?php echo $this->Form->create('UserImage',
-			array(
-				'type' => 'file',
-				'url' =>
-						array(
-								'controller' => 'userprofile',
-								'action' => 'create',
-								'referrer' => $referrer,
-								'language' => $localizeDir
-							),
-				'class' => 'thumb'
-			)); ?>
-        <img id="profile-photo" src="<?php echo $user->getImageUrl(); ?>">
-        <?php echo $this->Form->input('image_url', array(
-			'type' => 'hidden',
-			'label' => false,
-			'value' => $user->image
-		)) ?>
-        <button type="button">change image</button>
-        <?php echo $this->Form->end(); ?>
-                        
-        <label for="UserProfileGender">Gender:</label>
-        <select name="data[UserProfile][gender]" id="UserProfileGender">
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="female">Other</option>
-        </select>
+            reader.onload = function (e) {
+                $('#imagePreview').attr('src', e.target.result);
+                $('#imagePreview').show();
+            };
 
-        <label for="UserProfileBirthday">Birthday:</label>
-        <?php echo $this->Form->input('birthday', array('type' => 'date')); ?>
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+});
+</script>
 
-        <label for="UserProfileHobby">Hobby:</label>
-        <?php echo $this->Form->input('hobby', array('type' => 'text')); ?>
-    </fieldset>
-    <input type="submit" value="Submit">
+<fieldset>
+    <legend>Create Profile</legend>
+    
+    <img id="imagePreview" src="#" alt="Preview" style="max-width: 200px; display: none;">
+    <?php echo $this->Form->input('image', array('type' => 'file', 'id' => 'imageInput')); ?>
 
+    <label for="UserName">Name:</label>
+    <?php echo $this->Form->input('User.name', array('type' => 'text', 'value' => $userName)); ?>
+
+
+    <label for="UserProfileGender">Gender:</label>
+    <?php echo $this->Form->input('gender', array('type' => 'select', 'options' => array(
+        'male' => 'Male',
+        'female' => 'Female',
+        'other' => 'Other'
+    ))); ?>
+
+    <label for="UserProfileBirthday">Birthday:</label>
+    <?php echo $this->Form->input('birthday', array('type' => 'date')); ?>
+
+    <label for="UserProfileHobby">Hobby:</label>
+    <?php echo $this->Form->input('hobby', array('type' => 'text')); ?>
+</fieldset>
+
+<input type="submit" value="Submit">
 <?php echo $this->Form->end(); ?>
