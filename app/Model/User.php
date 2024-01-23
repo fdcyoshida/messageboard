@@ -4,6 +4,13 @@ App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
 
 
 class User extends AppModel {
+    public $hasOne = array(
+        'UserProfile' => array(
+            'className' => 'UserProfile',
+            'foreignKey' => 'user_id',
+        )
+    );
+    
     public $validate = array(
         'email' => array(
             'email' => array(
