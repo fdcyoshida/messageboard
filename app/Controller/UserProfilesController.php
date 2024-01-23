@@ -28,7 +28,7 @@ class UserProfilesController extends AppController {
 
                     $this->User->commit();
                     $this->Flash->success('Profile created successfully.');
-                    $this->redirect(array('controller' => 'users', 'action' => 'login'));
+                    $this->redirect(array('controller' => 'userprofiles', 'action' => 'show'));
                 } else {
                     $this->User->rollback();
                     $this->Flash->error('Failed to create profile.');
@@ -40,10 +40,24 @@ class UserProfilesController extends AppController {
         }
     }
 
+    public function show() {
+        $userProfile = $this->setUserProfile();
+        $this->set('userProfile', $userProfile);
+    }
+
+
     private function setUserName() {
         $userId = $this->Auth->user('id');
         $userData = $this->User->findById($userId);
         return isset($userData['User']['name']) ? $userData['User']['name'] : '';
+    }
+
+    private function setUserProfile() {
+        $userId = $this->Auth->user('id');
+        $userProfileData = $this->UserProfile->find('first', array(
+            'conditions' => array('UserProfile.user_id' => $userId)
+        ));
+        return $userProfileData;
     }
 
     private function handleImageUpload() {

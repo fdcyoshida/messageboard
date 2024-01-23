@@ -33,6 +33,8 @@ Router::connect('/users/login', array('controller' => 'users', 'action' => 'logi
 Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
 Router::connect('/userprofiles/new', array('controller' => 'userprofiles', 'action' => 'new'));
 Router::connect('/userprofiles/create', array('controller' => 'userprofiles', 'action' => 'create'), array('method' => 'POST'));
+Router::connect('/userprofiles/show', array('controller' => 'userprofiles', 'action' => 'show'));
+
 
 
 
