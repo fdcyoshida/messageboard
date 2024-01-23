@@ -45,6 +45,48 @@ class UserProfilesController extends AppController {
         $this->set('userProfile', $userProfile);
     }
 
+    public function edit() {
+        $userProfile = $this->setUserProfile();
+        $this->set('userProfile', $userProfile);
+    }
+
+    public function update() {
+        var_dump($this->request->data);
+        if ($this->request->is('post')) {
+            $this->User->begin();
+    
+            try {
+                $userData = $this->request->data['User'];
+                $userProfileData = $this->request->data['UserProfile'];
+    
+                $userId = $this->Auth->user('id');
+                $existingUserProfile = $this->UserProfile->findByUserId($userId);
+
+    
+                $userProfileData['id'] = $existingUserProfile['UserProfile']['id'];
+                if ($this->UserProfile->save($userProfileData)) {
+                    $this->User->id = $userId;
+                    if ($this->User->save($userData)) {
+                        $this->User->commit();
+                        $this->Flash->success('Profile updated successfully.');
+                    } else {
+                        $this->User->rollback();
+                        $this->Flash->error('Failed to update user data.');
+                    }
+                } else {
+                    $this->User->rollback();
+                    $this->Flash->error('Failed to update user profile data.');
+                }
+            } catch (Exception $e) {
+                $this->User->rollback();
+                $this->Flash->error('An error occurred during the update process.');
+            }
+    
+            $this->redirect(array('controller' => 'userprofiles', 'action' => 'show'));
+        }
+    }
+    
+    
 
     private function setUserName() {
         $userId = $this->Auth->user('id');

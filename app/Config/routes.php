@@ -34,6 +34,9 @@ Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'))
 Router::connect('/userprofiles/new', array('controller' => 'userprofiles', 'action' => 'new'));
 Router::connect('/userprofiles/create', array('controller' => 'userprofiles', 'action' => 'create'), array('method' => 'POST'));
 Router::connect('/userprofiles/show', array('controller' => 'userprofiles', 'action' => 'show'));
+Router::connect('/userprofiles/edit', array('controller' => 'userprofiles', 'action' => 'edit'));
+Router::connect('/userprofiles/update', array('controller' => 'userprofiles', 'action' => 'update'), array('method' => 'POST'));
+
 
 
 

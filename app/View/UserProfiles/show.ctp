@@ -34,3 +34,11 @@
         <td><?php echo h($userProfile['UserProfile']['hobby']); ?></td>
     </tr>
 </table>
+
+<?php
+echo $this->Html->link(
+    'Edit Profile',
+    array('controller' => 'userprofiles', 'action' => 'edit'),
+    array('class' => 'button')
+);
+?>
