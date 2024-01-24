@@ -51,7 +51,6 @@ class UserProfilesController extends AppController {
     }
 
     public function update() {
-        var_dump($this->request->data);
         if ($this->request->is('post')) {
             $this->User->begin();
     
@@ -61,6 +60,9 @@ class UserProfilesController extends AppController {
     
                 $userId = $this->Auth->user('id');
                 $existingUserProfile = $this->UserProfile->findByUserId($userId);
+
+                $image = $this->handleImageUpload();
+                $userProfileData['img'] = $image;
 
     
                 $userProfileData['id'] = $existingUserProfile['UserProfile']['id'];
