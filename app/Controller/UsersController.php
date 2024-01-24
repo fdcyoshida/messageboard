@@ -45,7 +45,7 @@ class UsersController extends AppController {
             }
             
             if (!empty($userData['new_password']) && !empty($userData['confirm_password']) && $userData['new_password'] === $userData['confirm_password']) {
-                $existingUser['User']['password'] =$userData['new_password'];
+                $existingUser['User']['password'] = $userData['new_password'];
 
             }
 
