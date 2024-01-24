@@ -15,7 +15,7 @@ class UsersController extends AppController {
 
             if ($this->User->save($userData)) {
                 $this->Flash->success('User registration successful.');
-                $this->redirect(array('controller' => 'users', 'action' => 'login'));
+                $this->redirect(array('controller' => 'userprofiles', 'action' => 'new'));
             } else {
                 $this->Flash->error('User registration failed.');
                 $this->redirect($this->request->referer());
