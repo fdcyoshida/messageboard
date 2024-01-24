@@ -38,8 +38,8 @@ Router::connect('/userprofiles/create', array('controller' => 'userprofiles', 'a
 Router::connect('/userprofiles/show', array('controller' => 'userprofiles', 'action' => 'show'));
 Router::connect('/userprofiles/edit', array('controller' => 'userprofiles', 'action' => 'edit'));
 Router::connect('/userprofiles/update', array('controller' => 'userprofiles', 'action' => 'update'), array('method' => 'POST'));
-
-
+Router::connect('/messages/new', array('controller' => 'messages', 'action' => 'new'));
+Router::connect('/messages/send', array('controller' => 'messages', 'action' => 'send'), array('method' => 'POST'));
 
 
 
