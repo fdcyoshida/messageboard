@@ -1,11 +1,39 @@
+<h1>Edit User Profile</h1>
+
 <?php
 echo $this->Form->create('UserProfile', array(
     'url' => array('controller' => 'userprofiles', 'action' => 'update'),
     'enctype' => 'multipart/form-data'
 ));
-
 ?>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#imageInput").change(function(){
+            readURL(this);
+        });
 
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#imagePreview').attr('src', e.target.result);
+                    $('#imagePreview').show();
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    });
+</script>
+
+<?php echo $this->Form->input('image', array('type' => 'file', 'id' => 'imageInput')); ?>
+<?php if (!empty($userProfile['UserProfile']['img'])): ?>
+    <img id="imagePreview" src="<?php echo $userProfile['UserProfile']['img']; ?>" alt="Preview" style="max-width: 200px; display: block;">
+<?php else: ?>
+    <img id="imagePreview" src="#" alt="Preview" style="max-width: 200px; display: none;">
+<?php endif; ?>
 
 <label for="UserProfileName">Name:</label>
 <input type="text" name="User[name]" value="<?php echo $userProfile['User']['name']; ?>">
@@ -22,9 +50,6 @@ echo $this->Form->create('UserProfile', array(
 
 <label for="UserProfileHobby">Hobby:</label>
 <input type="text" name="UserProfile[hobby]" value="<?php echo $userProfile['UserProfile']['hobby']; ?>">
-
-<label for="UserProfileImage">Profile Image:</label>
-<?php echo $this->Form->input('image', array('type' => 'file', 'id' => 'imageInput')); ?>
 
 <input type="submit" value="Update">
 

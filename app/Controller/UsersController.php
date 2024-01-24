@@ -6,6 +6,10 @@ class UsersController extends AppController {
 
     public $uses = array('User');
 
+    public function beforeFilter() {
+        $this->Auth->allow('register', 'create', 'login');
+    }
+
     public function register() {
     }
 
@@ -41,7 +45,7 @@ class UsersController extends AppController {
             }
             
             if (!empty($userData['new_password']) && !empty($userData['confirm_password']) && $userData['new_password'] === $userData['confirm_password']) {
-                $existingUser['User']['password'] = Security::hash($userData['new_password'], null, true);
+                //$existingUser['User']['password'] =$this->Auth->password($userData['new_password']);
 
             }
 

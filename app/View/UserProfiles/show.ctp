@@ -1,7 +1,7 @@
 <?php
 ?>
 <h1>User Profile</h1>
-
+<?php echo $this->Html->link('Logout', array('controller' => 'users', 'action' => 'logout')); ?>
 <table>
     <tr>
         <td>
@@ -41,4 +41,11 @@ echo $this->Html->link(
     array('controller' => 'userprofiles', 'action' => 'edit'),
     array('class' => 'button')
 );
+
+echo $this->Html->link(
+    'Edit Account',
+    array('controller' => 'users', 'action' => 'edit'),
+    array('class' => 'button')
+);
 ?>
+

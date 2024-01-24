@@ -35,7 +35,7 @@ class AppController extends Controller {
         'Flash',
         'Auth' => array(
             'Session',
-            'loginRedirect' => array('controller' => 'users', 'action' => 'register'),
+            'loginRedirect' => array('controller' => 'userprofiles', 'action' => 'show'),
             'logoutRedirect' => array('controller' => 'users', 'action' => 'login'),
             'authenticate' => array(
                 'Form' => array(
@@ -46,6 +46,6 @@ class AppController extends Controller {
         )
     );
     public function beforeFilter() {
-        $this->Auth->allow('register', 'create');
+        $this->Auth->allow('register', 'create', 'login');
     }
 }

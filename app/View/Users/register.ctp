@@ -4,8 +4,6 @@
 <div>
     <h1>Registration</h1>
 
-    <?php echo $this->Html->link('Logout', array('controller' => 'users', 'action' => 'logout')); ?>
-
     <form action="create" method="post">
         <label for="User_name">Name:</label>
         <input type="text" id="User_name" name="name">
