@@ -19,7 +19,7 @@ class UsersController extends AppController {
 
             if ($this->User->save($userData)) {
                 $this->Flash->success('User registration successful.');
-                $this->redirect(array('controller' => 'userprofiles', 'action' => 'new'));
+                $this->redirect(array('controller' => 'users', 'action' => 'login'));
             } else {
                 $this->Flash->error('User registration failed.');
                 $this->redirect($this->request->referer());
@@ -45,7 +45,7 @@ class UsersController extends AppController {
             }
             
             if (!empty($userData['new_password']) && !empty($userData['confirm_password']) && $userData['new_password'] === $userData['confirm_password']) {
-                //$existingUser['User']['password'] =$this->Auth->password($userData['new_password']);
+                $existingUser['User']['password'] =$userData['new_password'];
 
             }
 

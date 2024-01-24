@@ -1,10 +1,12 @@
 <?php
+echo $this->Form->create('User', array(
+    'url' => array('controller' => 'users', 'action' => 'create'),
+));
 ?>
 
 <div>
     <h1>Registration</h1>
-
-    <form action="create" method="post">
+    <?php echo $this->Form->create('User', array('url' => array('controller' => 'Users', 'action' => 'create'))); ?>
         <label for="User_name">Name:</label>
         <input type="text" id="User_name" name="name">
 
@@ -18,5 +20,4 @@
         <input type="password" id="User_confirm_password" name="confirm_password">
 
         <input type="submit" value="Submit">
-    </form>
 </div>

@@ -27,9 +27,9 @@
  */
 
 Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
-Router::connect('/users/register', array('controller' => 'users', 'action' => 'register'));
+Router::connect('/register', array('controller' => 'users', 'action' => 'register'));
 Router::connect('/users/create', array('controller' => 'users', 'action' => 'create'), array('method' => 'POST'));
-Router::connect('/users/login', array('controller' => 'users', 'action' => 'login'));
+Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
 Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
 Router::connect('/users/edit', array('controller' => 'users', 'action' => 'edit'));
 Router::connect('/users/update', array('controller' => 'users', 'action' => 'update'), array('method' => 'POST'));
