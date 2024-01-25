@@ -29,5 +29,24 @@ class MessagesController extends AppController {
             }
         }
     }
+
+    public function list() {
+        $loggedInUserId = $this->Auth->user('id');
+    
+        $latestMessages = $this->Message->find('all', [
+            'conditions' => ['Message.receiver_id' => $loggedInUserId],
+            'fields' => ['MAX(Message.created_at) AS max_created_at', 'Message.sender_id'],
+            'group' => ['Message.sender_id'],
+            'order' => ['max_created_at' => 'DESC'],
+            'contain' => [
+                'SenderUserProfile' => ['User' => ['fields' => ['id', 'name']]],
+            ],
+        ]);
+    
+        $this->set('latestMessages', $latestMessages);
+        var_dump($latestMessages);
+
+    }
+    
     
 }

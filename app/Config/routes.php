@@ -40,6 +40,7 @@ Router::connect('/userprofiles/edit', array('controller' => 'userprofiles', 'act
 Router::connect('/userprofiles/update', array('controller' => 'userprofiles', 'action' => 'update'), array('method' => 'POST'));
 Router::connect('/messages/new', array('controller' => 'messages', 'action' => 'new'));
 Router::connect('/messages/send', array('controller' => 'messages', 'action' => 'send'), array('method' => 'POST'));
+Router::connect('/messages/list', array('controller' => 'messages', 'action' => 'list'));
 
 
 
