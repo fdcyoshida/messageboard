@@ -34,7 +34,12 @@ class MessagesController extends AppController {
         $loggedInUserId = $this->Auth->user('id');
     
         $latestMessages = $this->Message->find('all', [
-            'conditions' => ['Message.receiver_id' => $loggedInUserId],
+            'conditions' => [
+                'OR' => [
+                    'Message.receiver_id' => $loggedInUserId,
+                    'Message.sender_id' => $loggedInUserId,
+                ]
+            ],
             'joins' => [
                 [
                     'type' => 'left',

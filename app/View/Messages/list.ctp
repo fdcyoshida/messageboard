@@ -1,6 +1,7 @@
 <!-- app/View/Messages/list.ctp -->
 
 <h1>Latest Messages</h1>
+<?php echo $this->Html->link('New Message', ['controller' => 'Messages', 'action' => 'new'], ['class' => 'button']); ?>
 
 <?php foreach ($latestMessages as $messageGroup): ?>
     <?php
