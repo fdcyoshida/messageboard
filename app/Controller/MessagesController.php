@@ -40,24 +40,54 @@ class MessagesController extends AppController {
                     'Message.sender_id' => $loggedInUserId,
                 ]
             ],
+            'order' => ['Message.created' => 'DESC'],
             'joins' => [
                 [
                     'type' => 'left',
                     'table' => 'userprofiles',
                     'alias' => 'UserProfile',
-                    'conditions' => 'UserProfile.user_id = Sender.id'
+                    'conditions' => [
+                        'UserProfile.user_id = Sender.id',
+                    ],
                 ]
             ],
-            'order' => ['Message.created' => 'DESC'],
-            'fields' => 'UserProfile.img, Sender.name, Sender.id, Message.text, Message.created',
+            'fields' => 'UserProfile.img, Sender.name, Sender.id, Message.text, Message.created, Message.sender_id, Message.receiver_id',
         ]);
     
         $latestMessages = $this->getLatestMessagesInGroups($latestMessages);
-    
+        $latestMessages = $this->filterDuplicateCombinations($latestMessages);
         $this->set('latestMessages', $latestMessages);
     }
+
+    public function destroyConversation() {
+        if ($this->request->is('post')) {
+            $postData = $this->request->data[Message];
     
-    protected function getLatestMessagesInGroups($latestMessages) {
+            $firstUserId = $postData['first_user_id'];
+            $secondUserId = $postData['second_user_id'];
+    
+            $this->Message->deleteAll(
+                [
+                    'OR' => [
+                        [
+                            'sender_id' => $firstUserId,
+                            'receiver_id' => $secondUserId,
+                        ],
+                        [
+                            'sender_id' => $secondUserId,
+                            'receiver_id' => $firstUserId,
+                        ],
+                    ],
+                ]
+            );
+    
+            $this->Flash->success('Conversation destroyed successfully.');
+    
+            return $this->redirect(['action' => 'list']);
+        }
+    }
+    
+    private function getLatestMessagesInGroups($latestMessages) {
         $groupedMessages = [];
         foreach ($latestMessages as $messageGroup) {
             $senderId = $messageGroup['Sender']['id'];
@@ -67,6 +97,25 @@ class MessagesController extends AppController {
         }
     
         return array_values($groupedMessages);
+    }
+
+    private function filterDuplicateCombinations($latestMessages) {
+        $filteredMessages = [];
+
+        foreach ($latestMessages as $message) {
+            $senderId = $message['Sender']['id'];
+            $receiverId = $message['Message']['receiver_id'];
+    
+            $reverseCombinationExists = isset($filteredMessages[$receiverId][$senderId]);
+    
+            if (!$reverseCombinationExists || $message['Message']['created'] > $filteredMessages[$receiverId][$senderId]['Message']['created']) {
+                $filteredMessages[$senderId][$receiverId] = $message;
+            }
+        }
+    
+        $filteredMessages = array_merge(...array_values($filteredMessages));
+    
+        return $filteredMessages;
     }
     
 }

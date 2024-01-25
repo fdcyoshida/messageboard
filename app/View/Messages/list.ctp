@@ -1,7 +1,12 @@
-<!-- app/View/Messages/list.ctp -->
+<!-- ここでsender.idとログイン中のユーザーが一致すれば表示を変更するようにする。あとはページネーション -->
 
 <h1>Latest Messages</h1>
 <?php echo $this->Html->link('New Message', ['controller' => 'Messages', 'action' => 'new'], ['class' => 'button']); ?>
+<script>
+     function confirmDelete() {
+        return confirm('Are you sure you want to destroy this conversation?');
+    }
+</script>
 
 <?php foreach ($latestMessages as $messageGroup): ?>
     <?php
@@ -24,7 +29,20 @@
         <div class="message-content">
             <p><?php echo h($latestMessage['text']); ?></p>
             <p><?php echo h(date('Y/m/d H:i', strtotime($latestMessage['created']))); ?></p>
+            <?php
+            echo $this->Form->create('Message', [
+                'url' => ['controller' => 'messages', 'action' => 'destroyConversation'],
+                'class' => 'destroy-conversation-form',
+                'id' => 'destroy-conversation-form-' . $latestMessage['sender_id'],
+                'onsubmit' => 'return confirmDelete();',
+            ]);
+
+            echo $this->Form->hidden('first_user_id', ['value' => $latestMessage['sender_id']]);
+            echo $this->Form->hidden('second_user_id', ['value' => $latestMessage['receiver_id']]);
+            echo $this->Form->button('Destroy', ['class' => 'destroy-conversation-btn']);
+            
+            echo $this->Form->end();
+            ?>
         </div>
     </div>
-<?php endforeach; ?>
-                
+<?php endforeach; ?>   
