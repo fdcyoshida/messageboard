@@ -20,33 +20,48 @@ class MessagesController extends AppController {
             $data = $this->request->data;
             $loggedInUserId = $this->Auth->user('id');
             $data['Message']['sender_id'] = $loggedInUserId;
-            $data['Message']['created_at'] = date('Y-m-d H:i:s');
 
             if ($this->Message->save($data)) {
                 $this->Flash->success('the message has been sent.');
+                $this->redirect(array('controller' => 'messages', 'action' => 'list'));
             } else {
                 $this->Flash->error('Failed to send message.');
             }
         }
     }
-
+    
     public function list() {
         $loggedInUserId = $this->Auth->user('id');
     
         $latestMessages = $this->Message->find('all', [
             'conditions' => ['Message.receiver_id' => $loggedInUserId],
-            'fields' => ['MAX(Message.created_at) AS max_created_at', 'Message.sender_id'],
-            'group' => ['Message.sender_id'],
-            'order' => ['max_created_at' => 'DESC'],
-            'contain' => [
-                'SenderUserProfile' => ['User' => ['fields' => ['id', 'name']]],
+            'joins' => [
+                [
+                    'type' => 'left',
+                    'table' => 'userprofiles',
+                    'alias' => 'UserProfile',
+                    'conditions' => 'UserProfile.user_id = Sender.id'
+                ]
             ],
+            'order' => ['Message.created' => 'DESC'],
+            'fields' => 'UserProfile.img, Sender.name, Sender.id, Message.text, Message.created',
         ]);
     
+        $latestMessages = $this->getLatestMessagesInGroups($latestMessages);
+    
         $this->set('latestMessages', $latestMessages);
-        var_dump($latestMessages);
-
     }
     
+    protected function getLatestMessagesInGroups($latestMessages) {
+        $groupedMessages = [];
+        foreach ($latestMessages as $messageGroup) {
+            $senderId = $messageGroup['Sender']['id'];
+            if (!isset($groupedMessages[$senderId]) || $messageGroup['Message']['created'] > $groupedMessages[$senderId]['Message']['created']) {
+                $groupedMessages[$senderId] = $messageGroup;
+            }
+        }
+    
+        return array_values($groupedMessages);
+    }
     
 }
