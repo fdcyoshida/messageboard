@@ -18,6 +18,6 @@ echo $this->Form->create('User', array(
 
         <label for="User_confirm_password">Confirm Password:</label>
         <input type="password" id="User_confirm_password" name="confirm_password">
-
-        <input type="submit" value="Submit">
+    <?php echo $this->Form->end(__('Submit')); ?>
+    
 </div>
