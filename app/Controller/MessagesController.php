@@ -25,7 +25,14 @@ class MessagesController extends AppController {
                     ],
                 ]
             ],
-            'fields' => 'UserProfile.img, Sender.name, Message.text, Message.created, Message.sender_id, Message.receiver_id',
+            'fields' => [
+                        'UserProfile.img',
+                        'Sender.name',
+                        'Message.text',
+                        'Message.created',
+                        'Message.sender_id',
+                        'Message.receiver_id',
+            ]
         ]);
 
         $latestMessages = $this->getLatestMessagesInGroups($latestMessages);
@@ -36,7 +43,6 @@ class MessagesController extends AppController {
         });
         
         $this->set('latestMessages', $latestMessages);
-        
     }
 
     public function new() {
@@ -66,9 +72,8 @@ class MessagesController extends AppController {
         }
     }
 
-    
-
     public function detail() {
+        $loggedInUserId = $this->Auth->user('id');
         $getQueryParams = $this->request->query;
         $firstUserId = $getQueryParams['first_user_id'];
         $secondUserId = $getQueryParams['second_user_id'];
@@ -95,6 +100,8 @@ class MessagesController extends AppController {
             'fields' => [
                 'SenderProfile.img AS sender_img',
                 'Sender.name AS sender_name',
+                'Sender.id',
+                'Message.id',
                 'Message.text',
                 'Message.created',
                 'Message.sender_id',
@@ -104,6 +111,7 @@ class MessagesController extends AppController {
 
         $messages = $this->Paginator->paginate('Message');
         $this->set('messages', $messages);
+        $this->set('loggedInUserId', $loggedInUserId);
     }
 
 
@@ -159,6 +167,25 @@ class MessagesController extends AppController {
             return $this->redirect(['action' => 'list']);
         }
     }
+    
+
+    public function destroyMessage($messageId) {
+        $message = $this->Message->findById($messageId);
+    
+        $senderId = $message['Message']['sender_id'];
+        $receiverId = $message['Message']['receiver_id'];
+    
+        $this->Message->delete($messageId);
+    
+        return $this->redirect([
+            'action' => 'detail',
+            '?' => [
+                'first_user_id' => $senderId,
+                'second_user_id' => $receiverId,
+            ],
+        ]);
+    }
+    
 
     private function getLatestMessagesInGroups($latestMessages) {
         $groupedMessages = [];

@@ -22,8 +22,13 @@
         <p><?php echo h($message['Sender']['sender_name']); ?></p>
         <p><?php echo h($message['Message']['text']); ?></p>
         <p>Sent at: <?php echo h(date('Y/m/d H:i', strtotime($message['Message']['created']))); ?></p>
+
+        <?php if ($message['Sender']['id'] == $loggedInUserId): ?>
+            <?php echo $this->Html->link('Delete', ['controller' => 'messages', 'action' => 'destroyMessage', $message['Message']['id']], ['confirm' => 'Are you sure?']); ?>
+        <?php endif; ?>
     </div>
 <?php endforeach; ?>
+
 
 <?php echo $this->Paginator->prev('« Previous'); ?>
 <?php echo $this->Paginator->numbers(); ?>
