@@ -47,17 +47,63 @@ class MessagesController extends AppController {
                     'table' => 'userprofiles',
                     'alias' => 'UserProfile',
                     'conditions' => [
-                        'UserProfile.user_id = Sender.id',
+                        'UserProfile.user_id = Message.sender_id',
                     ],
                 ]
             ],
-            'fields' => 'UserProfile.img, Sender.name, Sender.id, Message.text, Message.created, Message.sender_id, Message.receiver_id',
+            'fields' => 'UserProfile.img, Sender.name, Message.text, Message.created, Message.sender_id, Message.receiver_id',
         ]);
-    
+
         $latestMessages = $this->getLatestMessagesInGroups($latestMessages);
         $latestMessages = $this->filterDuplicateCombinations($latestMessages);
+        
+        usort($latestMessages, function($a, $b) {
+            return strtotime($b['Message']['created']) - strtotime($a['Message']['created']);
+        });
+        
         $this->set('latestMessages', $latestMessages);
+        
     }
+
+    public function detail() {
+
+        $postData = $this->request->data['Message'];
+        $firstUserId = $postData['first_user_id'];
+        $secondUserId = $postData['second_user_id'];
+
+        $messages = $this->Message->find('all', [
+            'conditions' => [
+                'OR' => [
+                    ['sender_id' => $firstUserId, 'receiver_id' => $secondUserId],
+                    ['sender_id' => $secondUserId, 'receiver_id' => $firstUserId],
+                ],
+            ],
+            'order' => ['Message.created' => 'DESC'],
+            'joins' => [
+                [
+                    'table' => 'userprofiles',
+                    'alias' => 'SenderProfile',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'SenderProfile.user_id = Message.sender_id',
+                    ],
+                ],
+            ],
+            'fields' => [
+                'SenderProfile.img AS sender_img',
+                'Sender.name AS sender_name',
+                'Message.text',
+                'Message.created',
+            ],
+        ]);
+        
+        
+        $this->set('messages', $messages);
+    }
+
+    
+        
+    
 
     public function destroyConversation() {
         if ($this->request->is('post')) {
@@ -86,13 +132,17 @@ class MessagesController extends AppController {
             return $this->redirect(['action' => 'list']);
         }
     }
-    
+
     private function getLatestMessagesInGroups($latestMessages) {
         $groupedMessages = [];
         foreach ($latestMessages as $messageGroup) {
-            $senderId = $messageGroup['Sender']['id'];
-            if (!isset($groupedMessages[$senderId]) || $messageGroup['Message']['created'] > $groupedMessages[$senderId]['Message']['created']) {
-                $groupedMessages[$senderId] = $messageGroup;
+            $senderId = $messageGroup['Message']['sender_id'];
+            $receiverId = $messageGroup['Message']['receiver_id'];
+    
+            $key = $senderId . '_' . $receiverId;
+    
+            if (!isset($groupedMessages[$key]) || $messageGroup['Message']['created'] > $groupedMessages[$key]['Message']['created']) {
+                $groupedMessages[$key] = $messageGroup;
             }
         }
     
@@ -103,7 +153,7 @@ class MessagesController extends AppController {
         $filteredMessages = [];
 
         foreach ($latestMessages as $message) {
-            $senderId = $message['Sender']['id'];
+            $senderId = $message['Message']['sender_id'];
             $receiverId = $message['Message']['receiver_id'];
     
             $reverseCombinationExists = isset($filteredMessages[$receiverId][$senderId]);

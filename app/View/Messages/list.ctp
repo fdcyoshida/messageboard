@@ -31,6 +31,18 @@
             <p><?php echo h(date('Y/m/d H:i', strtotime($latestMessage['created']))); ?></p>
             <?php
             echo $this->Form->create('Message', [
+                    'url' => ['controller' => 'messages', 'action' => 'detail'],
+                    'class' => 'detail-conversation-form',
+                ]);
+
+            echo $this->Form->hidden('first_user_id', ['value' => $latestMessage['sender_id']]);
+            echo $this->Form->hidden('second_user_id', ['value' => $latestMessage['receiver_id']]);
+            echo $this->Form->button('Details');
+
+            echo $this->Form->end();
+            ?>
+            <?php
+            echo $this->Form->create('Message', [
                 'url' => ['controller' => 'messages', 'action' => 'destroyConversation'],
                 'class' => 'destroy-conversation-form',
                 'id' => 'destroy-conversation-form-' . $latestMessage['sender_id'],
@@ -39,10 +51,10 @@
 
             echo $this->Form->hidden('first_user_id', ['value' => $latestMessage['sender_id']]);
             echo $this->Form->hidden('second_user_id', ['value' => $latestMessage['receiver_id']]);
-            echo $this->Form->button('Destroy', ['class' => 'destroy-conversation-btn']);
+            echo $this->Form->button('Destroy');
             
             echo $this->Form->end();
             ?>
         </div>
     </div>
-<?php endforeach; ?>   
+<?php endforeach; ?>
