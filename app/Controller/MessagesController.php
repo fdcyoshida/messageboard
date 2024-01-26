@@ -3,33 +3,6 @@ App::uses('AppController', 'Controller');
 
 class MessagesController extends AppController {
 
-    public function new() {
-        $loggedInUserId = $this->Auth->user('id');
-
-        $this->loadModel('User'); 
-
-        $users = $this->User->find('list', [
-            'conditions' => ['User.id NOT' => $loggedInUserId],
-            'contain' => ['UserProfile'],
-        ]);
-        $this->set('users', $users);
-    }
-
-    public function send() {
-        if ($this->request->is('post')) {
-            $data = $this->request->data;
-            $loggedInUserId = $this->Auth->user('id');
-            $data['Message']['sender_id'] = $loggedInUserId;
-
-            if ($this->Message->save($data)) {
-                $this->Flash->success('the message has been sent.');
-                $this->redirect(array('controller' => 'messages', 'action' => 'list'));
-            } else {
-                $this->Flash->error('Failed to send message.');
-            }
-        }
-    }
-    
     public function list() {
         $loggedInUserId = $this->Auth->user('id');
     
@@ -65,11 +38,37 @@ class MessagesController extends AppController {
         
     }
 
-    public function detail() {
+    public function new() {
+        $loggedInUserId = $this->Auth->user('id');
 
-        $postData = $this->request->data['Message'];
-        $firstUserId = $postData['first_user_id'];
-        $secondUserId = $postData['second_user_id'];
+        $this->loadModel('User'); 
+
+        $users = $this->User->find('list', [
+            'conditions' => ['User.id NOT' => $loggedInUserId],
+            'contain' => ['UserProfile'],
+        ]);
+        $this->set('users', $users);
+    }
+
+    public function send() {
+        if ($this->request->is('post')) {
+            $data = $this->request->data;
+            $loggedInUserId = $this->Auth->user('id');
+            $data['Message']['sender_id'] = $loggedInUserId;
+
+            if ($this->Message->save($data)) {
+                $this->Flash->success('the message has been sent.');
+                $this->redirect(array('controller' => 'messages', 'action' => 'list'));
+            } else {
+                $this->Flash->error('Failed to send message.');
+            }
+        }
+    }
+
+    public function detail() {
+        $getQueryParams = $this->request->query;
+        $firstUserId = $getQueryParams['first_user_id'];
+        $secondUserId = $getQueryParams['second_user_id'];
 
         $messages = $this->Message->find('all', [
             'conditions' => [
@@ -94,6 +93,8 @@ class MessagesController extends AppController {
                 'Sender.name AS sender_name',
                 'Message.text',
                 'Message.created',
+                'Message.sender_id',
+                'Message.receiver_id'
             ],
         ]);
         
@@ -101,9 +102,30 @@ class MessagesController extends AppController {
         $this->set('messages', $messages);
     }
 
-    
-        
-    
+    public function reply() {
+        if ($this->request->is('post')) {
+            $postData = $this->request->data['Message'];
+            $loggedInUserId = $this->Auth->user('id');
+
+            $replyData = [
+                'sender_id' => $loggedInUserId,
+                'receiver_id' => ($loggedInUserId == $postData['first_user_id']) ? $postData['second_user_id'] : $postData['first_user_id'],
+                'text' => $postData['text'],
+            ];
+
+            $this->Message->save($replyData);
+
+            return $this->redirect([
+                'action' => 'detail',
+                '?' => [
+                    'first_user_id' => $replyData['sender_id'],
+                    'second_user_id' => $replyData['receiver_id'],
+                ],
+            ]);
+        }
+    }
+
+
 
     public function destroyConversation() {
         if ($this->request->is('post')) {

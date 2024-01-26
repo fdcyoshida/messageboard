@@ -2,6 +2,7 @@
 ?>
 <h1>User Profile</h1>
 <?php echo $this->Html->link('Logout', array('controller' => 'users', 'action' => 'logout')); ?>
+<?php echo $this->Html->link('Message list', array('controller' => 'messages', 'action' => 'list'), array('class' => 'button'));?>
 <table>
     <tr>
         <td>
@@ -34,18 +35,9 @@
         <td><?php echo h($userProfile['UserProfile']['hobby']); ?></td>
     </tr>
 </table>
-
-<?php
-echo $this->Html->link(
-    'Edit Profile',
-    array('controller' => 'userprofiles', 'action' => 'edit'),
-    array('class' => 'button')
-);
-
-echo $this->Html->link(
-    'Edit Account',
-    array('controller' => 'users', 'action' => 'edit'),
-    array('class' => 'button')
-);
-?>
-
+<div>
+    <?php echo $this->Html->link('Edit Profile', array('controller' => 'userprofiles', 'action' => 'edit'));?>
+</div>
+<div>
+    <?php echo $this->Html->link('Edit Account', array('controller' => 'users', 'action' => 'edit'),);?>
+</div>

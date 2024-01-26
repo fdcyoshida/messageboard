@@ -1,12 +1,14 @@
-<!-- ここでsender.idとログイン中のユーザーが一致すれば表示を変更するようにする。あとはページネーション -->
-
-<h1>Latest Messages</h1>
-<?php echo $this->Html->link('New Message', ['controller' => 'Messages', 'action' => 'new'], ['class' => 'button']); ?>
 <script>
      function confirmDelete() {
         return confirm('Are you sure you want to destroy this conversation?');
     }
-</script>
+</script><h1>Latest Messages</h1>
+<div>
+    <?php echo $this->Html->link('Logout', array('controller' => 'users', 'action' => 'logout')); ?>
+</div>
+<div>
+    <?php echo $this->Html->link('New Message', ['controller' => 'Messages', 'action' => 'new'], ['class' => 'button']); ?>
+</div>
 
 <?php foreach ($latestMessages as $messageGroup): ?>
     <?php
@@ -33,6 +35,7 @@
             echo $this->Form->create('Message', [
                     'url' => ['controller' => 'messages', 'action' => 'detail'],
                     'class' => 'detail-conversation-form',
+                    'type' => 'get',
                 ]);
 
             echo $this->Form->hidden('first_user_id', ['value' => $latestMessage['sender_id']]);
