@@ -60,14 +60,26 @@ class UsersController extends AppController {
     }
 
     public function login() {
+        $this->loadModel('Userprofile');
         if ($this->request->is('post')) {
             if ($this->Auth->login()) {
-                return $this->redirect($this->Auth->redirect());
+                $loggedInUserId = $this->Auth->user('id');
+    
+                $hasUserProfile = $this->Userprofile->find('count', [
+                    'conditions' => ['user_id' => $loggedInUserId],
+                ]);
+    
+                if ($hasUserProfile) {
+                    return $this->redirect(['controller' => 'userprofiles', 'action' => 'show']);
+                } else {
+                    return $this->redirect(['controller' => 'userprofiles', 'action' => 'new']);
+                }
             } else {
                 $this->Flash->error(__('Invalid email or password, try again'));
             }
         }
     }
+    
 
     public function logout() {
         $this->redirect($this->Auth->logout());

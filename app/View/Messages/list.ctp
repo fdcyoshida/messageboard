@@ -2,7 +2,7 @@
      function confirmDelete() {
         return confirm('Are you sure you want to destroy this conversation?');
     }
-</script><h1>Latest Messages</h1>
+</script><h1>Message List</h1>
 <div>
     <?php echo $this->Html->link('Logout', array('controller' => 'users', 'action' => 'logout')); ?>
 </div>
