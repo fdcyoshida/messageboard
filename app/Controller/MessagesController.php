@@ -2,6 +2,7 @@
 App::uses('AppController', 'Controller');
 
 class MessagesController extends AppController {
+    public $components = array('Paginator');
 
     public function list() {
         $loggedInUserId = $this->Auth->user('id');
@@ -65,19 +66,22 @@ class MessagesController extends AppController {
         }
     }
 
+    
+
     public function detail() {
         $getQueryParams = $this->request->query;
         $firstUserId = $getQueryParams['first_user_id'];
         $secondUserId = $getQueryParams['second_user_id'];
 
-        $messages = $this->Message->find('all', [
+        $this->Paginator->settings = [
+            'limit' => 10,
+            'order' => ['Message.created' => 'desc'],
             'conditions' => [
                 'OR' => [
                     ['sender_id' => $firstUserId, 'receiver_id' => $secondUserId],
                     ['sender_id' => $secondUserId, 'receiver_id' => $firstUserId],
                 ],
             ],
-            'order' => ['Message.created' => 'DESC'],
             'joins' => [
                 [
                     'table' => 'userprofiles',
@@ -96,11 +100,12 @@ class MessagesController extends AppController {
                 'Message.sender_id',
                 'Message.receiver_id'
             ],
-        ]);
-        
-        
+        ];
+
+        $messages = $this->Paginator->paginate('Message');
         $this->set('messages', $messages);
     }
+
 
     public function reply() {
         if ($this->request->is('post')) {

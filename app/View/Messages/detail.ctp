@@ -24,3 +24,7 @@
         <p>Sent at: <?php echo h(date('Y/m/d H:i', strtotime($message['Message']['created']))); ?></p>
     </div>
 <?php endforeach; ?>
+
+<?php echo $this->Paginator->prev('« Previous'); ?>
+<?php echo $this->Paginator->numbers(); ?>
+<?php echo $this->Paginator->next('Next »'); ?>
