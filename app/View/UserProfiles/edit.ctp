@@ -6,7 +6,6 @@ echo $this->Form->create('UserProfile', array(
     'enctype' => 'multipart/form-data'
 ));
 ?>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     $(document).ready(function(){
         $("#imageInput").change(function(){
@@ -29,11 +28,12 @@ echo $this->Form->create('UserProfile', array(
 </script>
 
 <?php echo $this->Form->input('image', array('type' => 'file', 'id' => 'imageInput')); ?>
-<?php if (!empty($userProfile['UserProfile']['img'])): ?>
-    <img id="imagePreview" src="<?php echo $userProfile['UserProfile']['img']; ?>" alt="Preview" style="max-width: 200px; display: block;">
-<?php else: ?>
-    <img id="imagePreview" src="#" alt="Preview" style="max-width: 200px; display: none;">
-<?php endif; ?>
+<?php if (!empty($userProfile['UserProfile']['img'])) {
+        echo $this->Html->image($userProfile['UserProfile']['img'], array('alt' => 'Profile Image', 'width' => 200, 'height' => 200));
+    } else {
+        echo '<img id="imagePreview" src="#" alt="Preview" style="max-width: 200px; display: none;">';
+    }
+?>
 
 <label for="UserProfileName">Name:</label>
 <input type="text" name="User[name]" value="<?php echo $userProfile['User']['name']; ?>">

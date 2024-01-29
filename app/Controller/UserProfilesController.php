@@ -61,8 +61,12 @@ class UserProfilesController extends AppController {
                 $userId = $this->Auth->user('id');
                 $existingUserProfile = $this->UserProfile->findByUserId($userId);
 
-                $image = $this->handleImageUpload();
-                $userProfileData['img'] = $image;
+                if (!empty($this->request->data['UserProfile']['image']['name'])) {
+                    $image = $this->handleImageUpload();
+                    $userProfileData['img'] = $image;
+                } else {
+                    $userProfileData['img'] = $existingUserProfile['UserProfile']['img'];
+                }
 
     
                 $userProfileData['id'] = $existingUserProfile['UserProfile']['id'];
