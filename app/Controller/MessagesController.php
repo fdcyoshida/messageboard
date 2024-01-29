@@ -222,4 +222,9 @@ class MessagesController extends AppController {
         return $filteredMessages;
     }
     
+    public function getUserNames() {
+        $userNames = $this->User->find('list', array('fields' => array('id', 'name')));
+        $this->autoRender = false;
+        echo json_encode($userNames);
+    }
 }
