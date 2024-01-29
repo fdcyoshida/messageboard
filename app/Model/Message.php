@@ -18,6 +18,16 @@ class Message extends AppModel {
             'rule' => 'notEmpty',
             'required' => true,
             'message' => 'Message text cannot be empty.'
+        ),
+        'sender_id' => array(
+            'rule' => 'notBlank',
+            'required' => true,
+            'message' => 'Sender ID cannot be blank.'
+        ),
+        'receiver_id' => array(
+            'rule' => 'notBlank',
+            'required' => true,
+            'message' => 'Receiver ID cannot be blank.'
         )
     );
 }

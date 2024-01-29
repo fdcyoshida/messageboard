@@ -35,6 +35,16 @@ class User extends AppModel {
         return ($this->data[$this->alias]['password'] === $data['confirm_password']);
     }
 
+    public function beforeValidate($options = array()) {
+        parent::beforeValidate($options);
+
+        if (!empty($this->data[$this->alias]['password'])) {
+            $this->data[$this->alias]['password'] = str_replace(' ', '', $this->data[$this->alias]['password']);
+        }
+
+        return true;
+    }
+
     public function beforeSave($options = array()) {
         if (isset($this->data[$this->alias]['password'])) {
             $passwordHasher = new BlowfishPasswordHasher();

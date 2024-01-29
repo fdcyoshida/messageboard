@@ -62,12 +62,19 @@ class MessagesController extends AppController {
             $data = $this->request->data;
             $loggedInUserId = $this->Auth->user('id');
             $data['Message']['sender_id'] = $loggedInUserId;
-
-            if ($this->Message->save($data)) {
-                $this->Flash->success('the message has been sent.');
-                $this->redirect(array('controller' => 'messages', 'action' => 'list'));
+    
+            $this->Message->set($data);
+            if ($this->Message->validates()) {
+                if ($this->Message->save($data)) {
+                    $this->Flash->success('The message has been sent.');
+                    $this->redirect(array('controller' => 'messages', 'action' => 'list'));
+                } else {
+                    $this->Flash->error('Failed to send message.');
+                    return $this->redirect(['controller' => 'messages', 'action' => 'new']);
+                }
             } else {
-                $this->Flash->error('Failed to send message.');
+                $this->Flash->error('Validation failed. Please check your input.');
+                return $this->redirect(['controller' => 'messages', 'action' => 'new']);
             }
         }
     }
@@ -220,12 +227,5 @@ class MessagesController extends AppController {
         $filteredMessages = array_merge(...array_values($filteredMessages));
     
         return $filteredMessages;
-    }
-    
-    public function getUserNames() {
-        $this->loadModel('User'); 
-        $userNames = $this->User->find('list', array('fields' => array('id', 'name')));
-        $this->autoRender = false;
-        echo json_encode($userNames);
     }
 }
