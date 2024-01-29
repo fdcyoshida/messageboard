@@ -31,33 +31,41 @@ class UsersController extends AppController {
         $user = $this->Auth->user();
         $this->set('user', $user);
     }
-        
+
     public function update() {
         if ($this->request->is('post')) {
             $userData = $this->request->data['User'];
-
+    
             $userId = $this->Auth->user('id');
-
+    
             $existingUser = $this->User->findById($userId);
-
+    
             if (!empty($userData['email'])) {
                 $existingUser['User']['email'] = $userData['email'];
             }
-            
+    
             if (!empty($userData['new_password']) && !empty($userData['confirm_password']) && $userData['new_password'] === $userData['confirm_password']) {
                 $existingUser['User']['password'] = $userData['new_password'];
             } else {
                 unset($existingUser['User']['password']);
             }
-
-            if ($this->User->save($existingUser)) {
-                $this->Flash->success('User profile updated successfully.');
-                $this->redirect(array('controller' => 'userprofiles', 'action' => 'show'));
+    
+            $this->User->set($existingUser);
+    
+            if ($this->User->validates()) {
+                if ($this->User->save($existingUser)) {
+                    $this->Flash->success('User profile updated successfully.');
+                    $this->redirect(array('controller' => 'userprofiles', 'action' => 'show'));
+                } else {
+                    $this->Flash->error('Failed to update user profile.');
+                }
             } else {
-                $this->Flash->error('Failed to update user profile.');
+                $errors = $this->User->validationErrors;
+                $this->Flash->error('Validation failed: ' . json_encode($errors));
             }
         }
     }
+    
 
     public function login() {
         $this->loadModel('Userprofile');
