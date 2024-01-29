@@ -3,7 +3,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 <?php
     echo $this->Form->create('Message', array('url' => array('controller' => 'messages', 'action' => 'send')));
-    echo $this->Form->input('User.name', array('id' => 'userSelect'));
+    echo $this->Form->input('receiver_id', array('options'=> $users, 'id' => 'userSelect', 'default' => ''));
     echo $this->Form->input('text', array('label' => 'message'));
     echo $this->Form->submit('send');
     echo $this->Form->end();
@@ -11,15 +11,7 @@
 <script>
 $(document).ready(function() {
     $('#userSelect').select2({
-        ajax: {
-            url: '/messages/getUserNames',
-            dataType: 'json',
-            processResults: function(data) {
-                return {
-                    results: data
-                };
-            }
-        }
+        placeholder: 'Search Name : '
     });
 });
 </script>

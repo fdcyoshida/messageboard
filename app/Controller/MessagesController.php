@@ -223,6 +223,7 @@ class MessagesController extends AppController {
     }
     
     public function getUserNames() {
+        $this->loadModel('User'); 
         $userNames = $this->User->find('list', array('fields' => array('id', 'name')));
         $this->autoRender = false;
         echo json_encode($userNames);
