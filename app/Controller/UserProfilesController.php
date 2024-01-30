@@ -66,7 +66,7 @@ class UserProfilesController extends AppController {
                     $newImage = $this->handleImageUpload();
                     $userProfileData['img'] = $newImage;
                 } else {
-                    $userProfileData['img'] = $existingUserProfile['UserProfile']['img'];
+                    unset($userProfileData['img']);
                 }
     
                 $userProfileData['id'] = $existingUserProfile['UserProfile']['id'];
