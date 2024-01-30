@@ -1,39 +1,24 @@
-<h1>Edit User Profile</h1>
-
-<?php
-echo $this->Form->create('UserProfile', array(
-    'url' => array('controller' => 'userprofiles', 'action' => 'update'),
-    'enctype' => 'multipart/form-data'
-));
-?>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function(){
-        $("#imageInput").change(function(){
-            readURL(this);
-        });
-
-        function readURL(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    $('#imagePreview').attr('src', e.target.result);
-                    $('#imagePreview').show();
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-    });
+    function previewImage(input) {
+    var file = input.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#existingImage').attr('src', e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+}
 </script>
 
-<?php echo $this->Form->input('image', array('type' => 'file', 'id' => 'imageInput')); ?>
-<?php if (!empty($userProfile['UserProfile']['img'])) {
-        echo $this->Html->image($userProfile['UserProfile']['img'], array('alt' => 'Profile Image', 'width' => 200, 'height' => 200));
-    } else {
-        echo '<img id="imagePreview" src="#" alt="Preview" style="max-width: 200px; display: none;">';
-    }
-?>
+<h1>Edit User Profile</h1>
+
+<?php echo $this->Form->create('User', array('url' => array('controller' => 'userprofiles', 'action' => 'update'), 'enctype' => 'multipart/form-data')); ?>
+
+<?php echo $this->Form->input('UserProfile.image', array('type' => 'file', 'id' => 'imageInput', 'onchange' => 'previewImage(this);')); ?>
+
+<?php echo $this->Html->image($userProfile['UserProfile']['img'], array('alt' => 'Profile Image', 'width' => 200, 'height' => 200, 'id' => 'existingImage'));?>
 
 <label for="UserProfileName">Name:</label>
 <input type="text" name="User[name]" value="<?php echo $userProfile['User']['name']; ?>">

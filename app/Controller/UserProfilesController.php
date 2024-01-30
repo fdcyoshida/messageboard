@@ -48,30 +48,32 @@ class UserProfilesController extends AppController {
     public function edit() {
         $userProfile = $this->setUserProfile();
         $this->set('userProfile', $userProfile);
+        $userId = $this->Auth->user('id');
     }
 
     public function update() {
         if ($this->request->is('post')) {
             $this->User->begin();
-    
+            
             try {
                 $userData = $this->request->data['User'];
                 $userProfileData = $this->request->data['UserProfile'];
     
                 $userId = $this->Auth->user('id');
-                $existingUserProfile = $this->UserProfile->findByUserId($userId);
+                $existingUserProfile = $this->setUserProfile();
 
-                if (!empty($this->request->data['UserProfile']['image']['name'])) {
-                    $image = $this->handleImageUpload();
-                    $userProfileData['img'] = $image;
+                if (!empty($this->request->data['UserProfile']['image'])) {
+                    $newImage = $this->handleImageUpload();
+                    $userProfileData['img'] = $newImage;
                 } else {
                     $userProfileData['img'] = $existingUserProfile['UserProfile']['img'];
                 }
-
     
                 $userProfileData['id'] = $existingUserProfile['UserProfile']['id'];
+                
                 if ($this->UserProfile->save($userProfileData)) {
                     $this->User->id = $userId;
+                    
                     if ($this->User->save($userData)) {
                         $this->User->commit();
                         $this->Flash->success('Profile updated successfully.');
@@ -90,9 +92,7 @@ class UserProfilesController extends AppController {
     
             $this->redirect(array('controller' => 'userprofiles', 'action' => 'show'));
         }
-    }
-    
-    
+    } 
 
     private function setUserName() {
         $userId = $this->Auth->user('id');
