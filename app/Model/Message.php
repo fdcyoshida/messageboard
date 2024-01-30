@@ -15,7 +15,7 @@ class Message extends AppModel {
 
     public $validate = array(
         'text' => array(
-            'rule' => 'notEmpty',
+            'rule' => 'notBlank',
             'required' => true,
             'message' => 'Message text cannot be empty.'
         ),
