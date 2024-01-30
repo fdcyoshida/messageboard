@@ -46,15 +46,6 @@ class MessagesController extends AppController {
     }
 
     public function new() {
-        $loggedInUserId = $this->Auth->user('id');
-
-        $this->loadModel('User'); 
-
-        $users = $this->User->find('list', [
-            'conditions' => ['User.id NOT' => $loggedInUserId],
-            'contain' => ['UserProfile'],
-        ]);
-        $this->set('users', $users);
     }
 
     public function send() {
@@ -192,8 +183,31 @@ class MessagesController extends AppController {
             ],
         ]);
     }
-    
 
+    public function getUsers() {
+        $this->autoRender = false;
+        $this->loadModel('User');
+    
+        if ($this->request->is('ajax')) {
+            $name = $this->request->query('q');
+            $users = $this->User->find('all', ['conditions' => ['name LIKE' => '%' . $name . '%']]);
+    
+            $usersArray = [];
+            foreach ($users as $user) {
+                if (is_array($user)) {
+                    $usersArray[] = ['id' => $user['User']['id'], 'name' => $user['User']['name']];
+                } elseif (is_object($user)) {
+                    $usersArray[] = ['id' => $user->id, 'name' => $user->name];
+                }
+            }
+    
+            echo json_encode(['users' => $usersArray]);
+            exit();
+        }
+    }
+    
+    
+    
     private function getLatestMessagesInGroups($latestMessages) {
         $groupedMessages = [];
         foreach ($latestMessages as $messageGroup) {

@@ -43,6 +43,8 @@ Router::connect('/messages/new', array('controller' => 'messages', 'action' => '
 Router::connect('/messages/send', array('controller' => 'messages', 'action' => 'send'), array('method' => 'POST'));
 Router::connect('/messages/reply', array('controller' => 'messages', 'action' => 'reply'), array('method' => 'POST'));
 Router::connect('/messages/detail', array('controller' => 'messages', 'action' => 'detail'), array('method' => 'POST'));
+Router::connect('/messages/getUsers', array('controller' => 'messages', 'action' => 'getUsers'));
+
 
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
