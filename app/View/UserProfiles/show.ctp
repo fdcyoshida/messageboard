@@ -9,7 +9,7 @@
             <?php
                 if (!empty($userProfile['UserProfile']['img'])) {
                     echo $this->Html->image(
-                        $userProfile['UserProfile']['img'],
+                        'uploads/' . $userProfile['UserProfile']['img'],
                         array('alt' => 'Profile Image', 'width' => 200, 'height' => 200)
                     );
                 } else {

@@ -114,7 +114,7 @@ class UserProfilesController extends AppController {
         $filename = uniqid() . '_' . $file['name'];
 
         if (move_uploaded_file($file['tmp_name'], $uploadPath . $filename)) {
-            return 'uploads/' . $filename;
+            return $filename;
         }
 
         return null;

@@ -21,7 +21,7 @@
         <div class="sender-info">
             <?php
             echo $this->Html->image(
-                $userProfile['img'],
+                'uploads/' . $userProfile['img'],
                 ['alt' => 'Profile Image', 'width' => 100, 'height' => 100]
             );
             ?>

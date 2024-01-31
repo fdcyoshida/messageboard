@@ -18,7 +18,7 @@
 
 <?php echo $this->Form->input('UserProfile.image', array('type' => 'file', 'id' => 'imageInput', 'onchange' => 'previewImage(this);')); ?>
 
-<?php echo $this->Html->image($userProfile['UserProfile']['img'], array('alt' => 'Profile Image', 'width' => 200, 'height' => 200, 'id' => 'existingImage'));?>
+<?php echo $this->Html->image('uploads/' . $userProfile['UserProfile']['img'], array('alt' => 'Profile Image', 'width' => 200, 'height' => 200, 'id' => 'existingImage'));?>
 
 <label for="UserProfileName">Name:</label>
 <input type="text" name="User[name]" value="<?php echo $userProfile['User']['name']; ?>">

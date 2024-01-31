@@ -15,7 +15,7 @@ $(document).ready(function() {
                 if (response.success) {
                     var newMessage = response.replyMessage;                    
                     var messageHtml = '<div>' +
-                        '<img src="' + newMessage['sender_img'] + '" alt="Profile Image" width="50" height="50">' +
+                        '<img src="<?php echo $this->webroot; ?>/img/uploads/' + newMessage['sender_img'] + '" alt="Profile Image" width="50" height="50">' +
                         '<p>' + newMessage['sender_name'] + '</p>' +
                         '<p>' + newMessage['text'] + '</p>' +
                         '<p>Sent at: ' + newMessage['created'] + '</p>' +
@@ -54,7 +54,7 @@ $(document).ready(function() {
 <div class="messages-container">
     <?php foreach ($messages as $message): ?>
         <div>
-            <?php echo $this->Html->image($message['SenderProfile']['sender_img'], ['alt' => 'Profile Image', 'width' => 50, 'height' => 50]);?>
+            <?php echo $this->Html->image('uploads/'.$message['SenderProfile']['sender_img'], ['alt' => 'Profile Image', 'width' => 50, 'height' => 50]);?>
             <p><?php echo h($message['Sender']['sender_name']); ?></p>
             <p><?php echo h($message['Message']['text']); ?></p>
             <p>Sent at: <?php echo h(date('Y/m/d H:i', strtotime($message['Message']['created']))); ?></p>
