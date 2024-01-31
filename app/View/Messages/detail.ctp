@@ -1,9 +1,15 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    function formatDateTime(dateTimeString) {
+        var options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        var formattedDate = new Intl.DateTimeFormat('ja-JP', options).format(new Date(dateTimeString));
+        return formattedDate;
+    }
 $(document).ready(function() {
     $('.reply-form').submit(function(event) {
         event.preventDefault();
 
+        var form = $(this);
         var formData = $(this).serialize();
 
         $.ajax({
@@ -13,15 +19,17 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    var newMessage = response.replyMessage;                    
+                    var newMessage = response.replyMessage;
+                    var formattedDate = formatDateTime(newMessage['created']);                   
                     var messageHtml = '<div>' +
                         '<img src="<?php echo $this->webroot; ?>/img/uploads/' + newMessage['sender_img'] + '" alt="Profile Image" width="50" height="50">' +
                         '<p>' + newMessage['sender_name'] + '</p>' +
                         '<p>' + newMessage['text'] + '</p>' +
-                        '<p>Sent at: ' + newMessage['created'] + '</p>' +
+                        '<p>Sent at: ' + formattedDate + '</p>' +
                         '</div>';
                     $('.messages-container').prepend(messageHtml);
-                    
+
+                    form.find('textarea[name="data[Message][text]"]').val('');
                     var container = $('.messages-container');
                     container.scrollTop(container[0].scrollHeight);
                 }
