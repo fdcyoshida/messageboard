@@ -175,22 +175,24 @@ class MessagesController extends AppController {
         }
     }
     
-
-    public function destroyMessage($messageId) {
-        $message = $this->Message->findById($messageId);
+    public function destroyMessage($id) {
+        $this->autoRender = false;
     
-        $senderId = $message['Message']['sender_id'];
-        $receiverId = $message['Message']['receiver_id'];
+        if ($this->request->is('ajax') && $this->request->is('post')) {
+            $message = $this->Message->findById($id);
+            if ($message) {
+                $this->Message->delete($id);
+                $response = ['success' => true];
+            } else {
+                $response = ['success' => false, 'message' => 'Message not found'];
+            }
+        } else {
+            $response = ['success' => false, 'message' => 'Invalid request'];
+        }
     
-        $this->Message->delete($messageId);
-    
-        return $this->redirect([
-            'action' => 'detail',
-            '?' => [
-                'first_user_id' => $senderId,
-                'second_user_id' => $receiverId,
-            ],
-        ]);
+        $this->response->type('json');
+        $this->response->body(json_encode($response));
+        return $this->response;
     }
 
     public function getUsers() {

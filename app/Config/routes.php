@@ -25,7 +25,6 @@
  * its action called 'display', and we pass a param to select the view file
  * to use (in this case, /app/View/Pages/home.ctp)...
  */
-
 Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
 Router::connect('/register', array('controller' => 'users', 'action' => 'register'));
 Router::connect('/users/create', array('controller' => 'users', 'action' => 'create'), array('method' => 'POST'));
@@ -44,7 +43,7 @@ Router::connect('/messages/send', array('controller' => 'messages', 'action' => 
 Router::connect('/messages/reply', array('controller' => 'messages', 'action' => 'reply'), array('method' => 'POST'));
 Router::connect('/messages/detail', array('controller' => 'messages', 'action' => 'detail'), array('method' => 'POST'));
 Router::connect('/messages/getUsers', array('controller' => 'messages', 'action' => 'getUsers'));
-
+Router::connect('/messages/destroyMessage/:id', array('controller' => 'messages', 'action' => 'destroyMessage'), array('id' => '[0-9]+', 'routeClass' => 'CakeRoute'));
 
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
