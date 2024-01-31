@@ -112,32 +112,46 @@ class MessagesController extends AppController {
         $this->set('loggedInUserId', $loggedInUserId);
     }
 
-
     public function reply() {
-        if ($this->request->is('post')) {
+        $this->autoRender = false;
+        
+        if ($this->request->is('ajax') && $this->request->is('post')) {
             $postData = $this->request->data['Message'];
             $loggedInUserId = $this->Auth->user('id');
-
+    
+            // ログイン中のユーザー情報を取得
+            $loggedInUser = $this->Message->Sender->findById($loggedInUserId);
+            $loggedInUserProfile = $this->Message->Sender->UserProfile->findByUserId($loggedInUserId);
+    
+            // $replyData 配列に必要な情報を設定
             $replyData = [
                 'sender_id' => $loggedInUserId,
                 'receiver_id' => ($loggedInUserId == $postData['first_user_id']) ? $postData['second_user_id'] : $postData['first_user_id'],
                 'text' => $postData['text'],
+                'sender_name' => $loggedInUser['Sender']['name'],
+                'sender_img' => $loggedInUserProfile['UserProfile']['img'],
+                'created' => date('Y-m-d H:i:s'), // 送信日を現在の日時に設定
             ];
-
+    
+            // メッセージを保存
             $this->Message->save($replyData);
-
-            return $this->redirect([
-                'action' => 'detail',
-                '?' => [
-                    'first_user_id' => $replyData['sender_id'],
-                    'second_user_id' => $replyData['receiver_id'],
-                ],
-            ]);
+    
+            // JSON レスポンスを返す
+            $this->response->type('json');
+            $this->response->body(json_encode(['success' => true, 'replyMessage' => $replyData]));
+            return $this->response;
+        } else {
+            // JSON レスポンスを返す
+            $this->response->type('json');
+            $this->response->body(json_encode(['success' => false, 'message' => 'Invalid request']));
+            return $this->response;
         }
     }
+    
+    
+    
 
-
-
+    
     public function destroyConversation() {
         if ($this->request->is('post')) {
             $postData = $this->request->data[Message];
