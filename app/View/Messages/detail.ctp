@@ -1,10 +1,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    function formatDateTime(dateTimeString) {
-        var options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-        var formattedDate = new Intl.DateTimeFormat('ja-JP', options).format(new Date(dateTimeString));
-        return formattedDate;
-    }
 $(document).ready(function() {
     $('.reply-form').submit(function(event) {
         event.preventDefault();
@@ -40,17 +35,21 @@ $(document).ready(function() {
     });
 });
 $(document).ready(function() {
-    $('.delete-message').on('click', function(e) {
-        e.preventDefault();
+    $('#destroy-message-form').submit(function(event) {
+        event.preventDefault();
 
-        var messageId = $(this).data('message-id');
+        var formData = $(this).serialize();
+        var messageId = $(this).find('#destroy-message-btn').data('message-id');
 
+        var messageContainer = $('#message-' + messageId);
         $.ajax({
             type: 'POST',
-            url: '/messages/destroyMessage/' + messageId + '.json',
+            url: $(this).attr('action'),
+            data: formData,
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
+                    hideMessage(messageId);
                     console.log('Message deleted successfully');
                 } else {
                     console.error('Failed to delete message');
@@ -61,7 +60,26 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('#destroy-message-btn').on('click', function() {
+        return confirmDelete();
+    });
 });
+
+    function confirmDelete() {
+        return confirm('Are you sure you want to delete this message?');
+    }
+    function hideMessage(messageId) {
+        var messageElement = document.getElementById('message-' + messageId);
+        if (messageElement) {
+            messageElement.style.display = 'none';
+        }
+    }
+    function formatDateTime(dateTimeString) {
+        var options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        var formattedDate = new Intl.DateTimeFormat('ja-JP', options).format(new Date(dateTimeString));
+        return formattedDate;
+    }
 </script>
 
 <h1>Message Details</h1>
@@ -84,19 +102,30 @@ $(document).ready(function() {
 </div>
 <div class="messages-container">
     <?php foreach ($messages as $message): ?>
-        <div>
+        <div id="message-<?php echo $message['Message']['id']; ?>">
             <?php echo $this->Html->image('uploads/'.$message['SenderProfile']['sender_img'], ['alt' => 'Profile Image', 'width' => 50, 'height' => 50]);?>
             <p><?php echo h($message['Sender']['sender_name']); ?></p>
             <p><?php echo h($message['Message']['text']); ?></p>
             <p>Sent at: <?php echo h(date('Y/m/d H:i', strtotime($message['Message']['created']))); ?></p>
 
             <?php if ($message['Sender']['id'] == $loggedInUserId): ?>
-                <?php echo $this->Html->link('Delete', '#', ['class' => 'delete-message', 'data-message-id' => $message['Message']['id'],]); ?>
+                <?php
+                    echo $this->Form->create('Message', [
+                        'url' => ['controller' => 'messages', 'action' => 'destroyMessage'],
+                        'id' => 'destroy-message-form'
+                    ]);
+                    echo $this->Form->hidden('id', ['value' => $message['Message']['id']]);
+                    echo $this->Form->button('Destroy', [
+                        'id' => 'destroy-message-btn',
+                        'class' => 'delete-message-btn',
+                        'data-message-id' => $message['Message']['id']
+                    ]);
+                    echo $this->Form->end();
+                ?>
             <?php endif; ?>
         </div>
     <?php endforeach; ?>
 </div>
-
 
 <?php echo $this->Paginator->prev('« Previous'); ?>
 <?php echo $this->Paginator->numbers(); ?>
