@@ -35,17 +35,17 @@ $(document).ready(function() {
     });
 });
 $(document).ready(function() {
-    $('#destroy-message-form').submit(function(event) {
+    $('#destroy-message-btn').on('click', function() {
         event.preventDefault();
-
-        var formData = $(this).serialize();
-        var messageId = $(this).find('#destroy-message-btn').data('message-id');
+        console.log($(this).data('message-id'));
+        var messageId = $(this).data('message-id');
 
         var messageContainer = $('#message-' + messageId);
+        
         $.ajax({
             type: 'POST',
-            url: $(this).attr('action'),
-            data: formData,
+            url : "<?php echo $this->Html->url(array('controller' => 'messages', 'action'=> 'destroyMessage')); ?>",
+            data: { messageId: messageId },
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
@@ -111,8 +111,6 @@ $(document).ready(function() {
             <?php if ($message['Sender']['id'] == $loggedInUserId): ?>
                 <?php
                     echo $this->Form->create('Message', [
-                        'url' => ['controller' => 'messages', 'action' => 'destroyMessage'],
-                        'id' => 'destroy-message-form'
                     ]);
                     echo $this->Form->hidden('id', ['value' => $message['Message']['id']]);
                     echo $this->Form->button('Destroy', [
@@ -120,7 +118,6 @@ $(document).ready(function() {
                         'class' => 'delete-message-btn',
                         'data-message-id' => $message['Message']['id']
                     ]);
-                    echo $this->Form->end();
                 ?>
             <?php endif; ?>
         </div>

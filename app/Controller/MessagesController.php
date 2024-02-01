@@ -177,6 +177,8 @@ class MessagesController extends AppController {
     
     public function destroyMessage() {
         $this->autoRender = false;
+        var_dump($id);exit;
+
         if ($this->request->is('ajax') && $this->request->is('post')) {
             // AjaxリクエストからIDを取得
             $id = $this->request->data['Message']['id'];
