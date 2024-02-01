@@ -11,18 +11,23 @@ class UsersController extends AppController {
     }
 
     public function register() {
-    }
-
-    public function create() {
         if ($this->request->is('post')) {
             $userData = $this->request->data;
 
-            if ($this->User->save($userData)) {
-                $this->Flash->success('User registration successful.');
-                $this->redirect(array('controller' => 'users', 'action' => 'login'));
+            $this->User->set($userData);
+
+            if (!$this->User->validates()) {
+                //do nothing
+
             } else {
-                $this->Flash->error('User registration failed.');
-                $this->redirect($this->request->referer());
+
+                if ($this->User->save()) {
+                    $this->Flash->success('User registration successful.');
+                    $this->redirect(array('controller' => 'users', 'action' => 'login'));
+                } else {
+                    $this->Flash->error('User registration failed.');
+                    $this->redirect($this->request->referer());
+                }
             }
         }
     }

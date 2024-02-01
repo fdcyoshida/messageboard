@@ -12,7 +12,17 @@ class User extends AppModel {
     );
     
     public $validate = array(
+        'name' => array(
+            'notEmpty' => array(
+                'rule' => 'notBlank',
+                'message' => 'Name cannot be empty'
+            )
+        ),
         'email' => array(
+            'notBlank' => array(
+                'rule' => 'notBlank',
+                'message' => 'Please enter an email address'
+            ),
             'email' => array(
                 'rule' => 'email',
                 'message' => 'Please enter a valid email address format'
@@ -20,6 +30,16 @@ class User extends AppModel {
             'unique' => array(
                 'rule' => 'isUnique',
                 'message' => 'Email address already in use'
+            )
+        ),
+        'password' => array(
+            'notBlank' => array(
+                'rule' => 'notBlank',
+                'message' => 'Please enter a password'
+            ),
+            'minLength' => array(
+                'rule' => array('minLength', 8),
+                'message' => 'Password must be at least 8 characters long'
             )
         ),
         'confirm_password' => array(
