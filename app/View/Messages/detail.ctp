@@ -35,44 +35,43 @@ $(document).ready(function() {
     });
 });
 $(document).ready(function() {
-    $('#destroy-message-btn').on('click', function() {
+    $('.destroy-message-btn').on('click', function(event) {
         event.preventDefault();
-        console.log($(this).data('message-id'));
-        var messageId = $(this).data('message-id');
 
-        var messageContainer = $('#message-' + messageId);
-        
-        $.ajax({
-            type: 'POST',
-            url : "<?php echo $this->Html->url(array('controller' => 'messages', 'action'=> 'destroyMessage')); ?>",
-            data: { messageId: messageId },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    hideMessage(messageId);
-                    console.log('Message deleted successfully');
-                } else {
-                    console.error('Failed to delete message');
+        if (confirmDelete()) {
+            var messageId = $(this).data('message-id');
+
+            var messageContainer = $('#message-' + messageId);
+
+            $.ajax({
+                type: 'POST',
+                url: "<?php echo $this->Html->url(array('controller' => 'messages', 'action' => 'destroyMessage')); ?>",
+                data: { messageId: messageId },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        removeMessage(messageId);
+                        console.log('Message deleted successfully');
+                    } else {
+                        console.error('Failed to delete message');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', status, error);
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', status, error);
-            }
-        });
-    });
-
-    $('#destroy-message-btn').on('click', function() {
-        return confirmDelete();
+            });
+        }
     });
 });
+
 
     function confirmDelete() {
         return confirm('Are you sure you want to delete this message?');
     }
-    function hideMessage(messageId) {
+    function removeMessage(messageId) {
         var messageElement = document.getElementById('message-' + messageId);
         if (messageElement) {
-            messageElement.style.display = 'none';
+            messageElement.remove();
         }
     }
     function formatDateTime(dateTimeString) {
@@ -114,8 +113,7 @@ $(document).ready(function() {
                     ]);
                     echo $this->Form->hidden('id', ['value' => $message['Message']['id']]);
                     echo $this->Form->button('Destroy', [
-                        'id' => 'destroy-message-btn',
-                        'class' => 'delete-message-btn',
+                        'class' => 'destroy-message-btn',
                         'data-message-id' => $message['Message']['id']
                     ]);
                 ?>

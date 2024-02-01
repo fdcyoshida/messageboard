@@ -114,8 +114,7 @@ class MessagesController extends AppController {
 
     public function reply() {
         $this->autoRender = false;
-        
-        if ($this->request->is('ajax') && $this->request->is('post')) {
+        if ($this->request->is('ajax')) {
             $postData = $this->request->data['Message'];
             $loggedInUserId = $this->Auth->user('id');
     
@@ -177,13 +176,9 @@ class MessagesController extends AppController {
     
     public function destroyMessage() {
         $this->autoRender = false;
-        var_dump($id);exit;
-
         if ($this->request->is('ajax') && $this->request->is('post')) {
-            // AjaxリクエストからIDを取得
-            $id = $this->request->data['Message']['id'];
+            $id = $this->request->data['messageId'];
     
-            // $id を使用して削除処理を実行
             $message = $this->Message->findById($id);
     
             if ($message) {
@@ -196,7 +191,6 @@ class MessagesController extends AppController {
             $response = ['success' => false, 'message' => 'Invalid request'];
         }
     
-        // レスポンスの設定
         $this->response->type('json');
         $this->response->body(json_encode($response));
         return $this->response;
