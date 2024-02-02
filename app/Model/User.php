@@ -16,6 +16,10 @@ class User extends AppModel {
             'notEmpty' => array(
                 'rule' => 'notBlank',
                 'message' => 'Name cannot be empty'
+            ),
+            'length' => array(
+                'rule' => ['lengthBetween', 5, 20],
+                'message' => 'Name must be between 5 and 20 characters'
             )
         ),
         'email' => array(
