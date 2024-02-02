@@ -11,8 +11,8 @@ class UserProfilesController extends AppController {
         if ($this->request->is('post')) {
             $this->loadModel('User');
             $userId = $this->Auth->user('id');
-            $date = DateTime::createFromFormat('m/d/Y', '02/01/2024');
-            $correctFormattedDate = $date->format('Y-m-d');
+            $birthday = date('Y-m-d', strtotime($this->request->data['UserProfile']['birthday']));
+
 
             try {
                 $this->User->begin();
@@ -30,7 +30,7 @@ class UserProfilesController extends AppController {
                         'user_id' => $userId,
                         'img' => $image,
                         'gender' => $this->request->data['UserProfile']['gender'], 
-                        'birthday' => $correctFormattedDate,
+                        'birthday' => $birthday,
                         'hobby' => $this->request->data['UserProfile']['hobby']
                     )
                 );
@@ -88,19 +88,17 @@ class UserProfilesController extends AppController {
             $userData = $this->request->data['User'];
             $userProfileData = $this->request->data['UserProfile'];
             $userProfileData['id'] = $userProfile['UserProfile']['id'];
-            $dateString = $this->request->data['UserProfile']['date'];
-            $birthday = DateTime::createFromFormat('m/d/Y', $dateString);
+            $birthday = date('Y-m-d', strtotime($this->request->data['UserProfile']['birthday']));
+            
             $userProfileData = array(
                 'UserProfile' => array(
                     'id' => $userProfile['UserProfile']['id'],
                     'user_id' => $userId,
                     'gender' => $this->request->data['UserProfile']['gender'], 
-                    'birthday' =>  $this->request->data['UserProfile']['date'],
+                    'birthday' =>  $birthday,
                     'hobby' => $this->request->data['UserProfile']['hobby']
                 )
             );
-            $errors = DateTime::getLastErrors();
-            var_dump($errors);exit();
             $this->User->set($userData);
             $this->UserProfile->set($userProfileData);
 
