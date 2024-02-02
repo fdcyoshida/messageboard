@@ -76,8 +76,9 @@ class UsersController extends AppController {
         $this->loadModel('Userprofile');
         if ($this->request->is('post')) {
             if ($this->Auth->login()) {
+                $this->afterLogin();
+
                 $loggedInUserId = $this->Auth->user('id');
-    
                 $hasUserProfile = $this->Userprofile->find('count', [
                     'conditions' => ['user_id' => $loggedInUserId],
                 ]);

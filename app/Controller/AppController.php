@@ -48,4 +48,12 @@ class AppController extends Controller {
     public function beforeFilter() {
         $this->Auth->allow('register', 'create', 'login');
     }
+    public function afterLogin()
+    {
+        $loggedInUserId = $this->Auth->user('id');
+
+        $this->loadModel('Users');
+        $this->Users->id = $loggedInUserId;
+        $this->Users->saveField('last_login', date('Y-m-d H:i:s'));
+    }
 }
