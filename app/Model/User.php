@@ -13,7 +13,7 @@ class User extends AppModel {
     
     public $validate = array(
         'name' => array(
-            'notEmpty' => array(
+            'notBlank' => array(
                 'rule' => 'notBlank',
                 'message' => 'Name cannot be empty'
             ),
