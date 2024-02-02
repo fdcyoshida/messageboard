@@ -72,8 +72,6 @@ class UserProfilesController extends AppController {
         }
     }
     
-    
-
     public function show() {
         $userProfile = $this->setUserProfile();
         $this->set('userProfile', $userProfile);

@@ -23,7 +23,11 @@ $(document).ready(function(){
 </script>
 <script>
 $(document).ready(function(){
-    $('.datepicker').datepicker();
+    $('.datepicker').datepicker({
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-100:+0"
+    });
 });
 </script>
 
