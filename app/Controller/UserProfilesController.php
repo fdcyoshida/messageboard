@@ -11,7 +11,9 @@ class UserProfilesController extends AppController {
         if ($this->request->is('post')) {
             $this->loadModel('User');
             $userId = $this->Auth->user('id');
-    
+            $date = DateTime::createFromFormat('m/d/Y', '02/01/2024');
+            $correctFormattedDate = $date->format('Y-m-d');
+
             try {
                 $this->User->begin();
     
@@ -28,7 +30,7 @@ class UserProfilesController extends AppController {
                         'user_id' => $userId,
                         'img' => $image,
                         'gender' => $this->request->data['UserProfile']['gender'], 
-                        'birthday' => $this->request->data['UserProfile']['birthday'],
+                        'birthday' => $correctFormattedDate,
                         'hobby' => $this->request->data['UserProfile']['hobby']
                     )
                 );
@@ -81,16 +83,27 @@ class UserProfilesController extends AppController {
         $userProfile = $this->setUserProfile();
         $this->set('userProfile', $userProfile);
         $userId = $this->Auth->user('id');
-    
         if ($this->request->is('post')) {
             $this->User->begin();
             $userData = $this->request->data['User'];
             $userProfileData = $this->request->data['UserProfile'];
             $userProfileData['id'] = $userProfile['UserProfile']['id'];
-    
+            $dateString = $this->request->data['UserProfile']['date'];
+            $birthday = DateTime::createFromFormat('m/d/Y', $dateString);
+            $userProfileData = array(
+                'UserProfile' => array(
+                    'id' => $userProfile['UserProfile']['id'],
+                    'user_id' => $userId,
+                    'gender' => $this->request->data['UserProfile']['gender'], 
+                    'birthday' =>  $this->request->data['UserProfile']['date'],
+                    'hobby' => $this->request->data['UserProfile']['hobby']
+                )
+            );
+            $errors = DateTime::getLastErrors();
+            var_dump($errors);exit();
             $this->User->set($userData);
             $this->UserProfile->set($userProfileData);
-    
+
             if ($this->User->validates() && $this->UserProfile->validates()) {
                 try {
                     if (!empty($this->request->data['UserProfile']['image']['tmp_name'])) {
@@ -99,7 +112,6 @@ class UserProfilesController extends AppController {
                     } else {
                         unset($userProfileData['img']);
                     }
-    
                     if ($this->UserProfile->save($userProfileData)) {
                         $this->User->id = $userId;
     
@@ -116,6 +128,7 @@ class UserProfilesController extends AppController {
                     }
                 } catch (Exception $e) {
                     $this->User->rollback();
+                    CakeLog::write('error', 'An error occurred during the update process: ' . $e->getMessage());
                     $this->Flash->error('An error occurred during the update process.');
                 }
     

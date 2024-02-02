@@ -32,7 +32,7 @@
     <?php echo $this->Html->image('uploads/' . $userProfile['UserProfile']['img'], array( 'alt' => 'Profile Image', 'width' => 200, 'height' => 200, 'id' => 'existingImage')); ?>
     <?php echo $this->Form->input('User.name', array('label' => 'Name', 'value' => $userProfile['User']['name'])); ?>
     <?php echo $this->Form->input('UserProfile.gender', array('label' => 'Gender', 'options' => array('male' => 'Male', 'female' => 'Female', 'other' => 'Other'), 'default' => $userProfile['UserProfile']['gender'])); ?>
-    <?php echo $this->Form->input('UserProfile.birthday', array('label' => 'Birthday', 'type' => 'text',  'class' => 'datepicker', 'value' => $userProfile['UserProfile']['birthday'])); ?>
+    <?php echo $this->Form->input('UserProfile.birthday', array('type' => 'text',  'class' => 'datepicker', 'value' => $userProfile['UserProfile']['birthday'])); ?>
     <?php echo $this->Form->input('UserProfile.hobby', array('label' => 'Hobby', 'type' => 'text', 'value' => $userProfile['UserProfile']['hobby'])); ?>
     <?php echo $this->Form->submit('Update'); ?>
     <?php echo $this->Form->end(); ?>
