@@ -81,50 +81,52 @@ class UserProfilesController extends AppController {
         $userProfile = $this->setUserProfile();
         $this->set('userProfile', $userProfile);
         $userId = $this->Auth->user('id');
-    }
-
-    public function update() {
+    
         if ($this->request->is('post')) {
             $this->User->begin();
-            
-            try {
-                $userData = $this->request->data['User'];
-                $userProfileData = $this->request->data['UserProfile'];
+            $userData = $this->request->data['User'];
+            $userProfileData = $this->request->data['UserProfile'];
+            $userProfileData['id'] = $userProfile['UserProfile']['id'];
     
-                $userId = $this->Auth->user('id');
-                $existingUserProfile = $this->setUserProfile();
-
-                if (!empty($this->request->data['UserProfile']['image']['tmp_name'])) {
-                    $newImage = $this->handleImageUpload();
-                    $userProfileData['img'] = $newImage;
-                } else {
-                    unset($userProfileData['img']);
-                }
+            $this->User->set($userData);
+            $this->UserProfile->set($userProfileData);
     
-                $userProfileData['id'] = $existingUserProfile['UserProfile']['id'];
-                
-                if ($this->UserProfile->save($userProfileData)) {
-                    $this->User->id = $userId;
-                    
-                    if ($this->User->save($userData)) {
-                        $this->User->commit();
-                        $this->Flash->success('Profile updated successfully.');
+            if ($this->User->validates() && $this->UserProfile->validates()) {
+                try {
+                    if (!empty($this->request->data['UserProfile']['image']['tmp_name'])) {
+                        $newImage = $this->handleImageUpload();
+                        $userProfileData['img'] = $newImage;
+                    } else {
+                        unset($userProfileData['img']);
+                    }
+    
+                    if ($this->UserProfile->save($userProfileData)) {
+                        $this->User->id = $userId;
+    
+                        if ($this->User->save($userData)) {
+                            $this->User->commit();
+                            $this->Flash->success('Profile updated successfully.');
+                        } else {
+                            $this->User->rollback();
+                            $this->Flash->error('Failed to update user data.');
+                        }
                     } else {
                         $this->User->rollback();
-                        $this->Flash->error('Failed to update user data.');
+                        $this->Flash->error('Failed to update user profile data.');
                     }
-                } else {
+                } catch (Exception $e) {
                     $this->User->rollback();
-                    $this->Flash->error('Failed to update user profile data.');
+                    $this->Flash->error('An error occurred during the update process.');
                 }
-            } catch (Exception $e) {
-                $this->User->rollback();
-                $this->Flash->error('An error occurred during the update process.');
-            }
     
-            $this->redirect(array('controller' => 'userprofiles', 'action' => 'show'));
+                $this->redirect(array('controller' => 'userprofiles', 'action' => 'show'));
+            } else {
+                $this->Flash->error('Validation failed. Please check your input.');
+            }
         }
-    } 
+    }
+    
+
 
     private function setUserName() {
         $userId = $this->Auth->user('id');
