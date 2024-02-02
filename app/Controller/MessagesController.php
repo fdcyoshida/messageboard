@@ -131,7 +131,9 @@ class MessagesController extends AppController {
             ];
     
             $this->Message->save($replyData);
-    
+            $messageId = $this->Message->getLastInsertID();
+            $replyData['id'] = $messageId;
+            
             $this->response->type('json');
             $this->response->body(json_encode(['success' => true, 'replyMessage' => $replyData]));
             return $this->response;

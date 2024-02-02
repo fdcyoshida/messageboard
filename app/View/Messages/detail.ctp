@@ -1,68 +1,70 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function() {
-    $('.reply-form').submit(function(event) {
-        event.preventDefault();
+    $(document).ready(function() {
+        // reply-form の submit イベント
+        $(document).on('submit', '.reply-form', function(event) {
+            event.preventDefault();
 
-        var form = $(this);
-        var formData = $(this).serialize();
-
-        $.ajax({
-            type: 'POST',
-            url: $(this).attr('action'),
-            data: formData,
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    var newMessage = response.replyMessage;
-                    var formattedDate = formatDateTime(newMessage['created']);                   
-                    var messageHtml = '<div>' +
-                        '<img src="<?php echo $this->webroot; ?>/img/uploads/' + newMessage['sender_img'] + '" alt="Profile Image" width="50" height="50">' +
-                        '<p>' + newMessage['sender_name'] + '</p>' +
-                        '<p>' + newMessage['text'] + '</p>' +
-                        '<p>Sent at: ' + formattedDate + '</p>' +
-                        '</div>';
-                    $('.messages-container').prepend(messageHtml);
-
-                    form.find('textarea[name="data[Message][text]"]').val('');
-                    var container = $('.messages-container');
-                    container.scrollTop(container[0].scrollHeight);
-                }
-            },
-            error: function(error) {
-            }
-        });
-    });
-});
-$(document).ready(function() {
-    $('.destroy-message-btn').on('click', function(event) {
-        event.preventDefault();
-
-        if (confirmDelete()) {
-            var messageId = $(this).data('message-id');
-
-            var messageContainer = $('#message-' + messageId);
+            var form = $(this);
+            var formData = form.serialize();
 
             $.ajax({
                 type: 'POST',
-                url: "<?php echo $this->Html->url(array('controller' => 'messages', 'action' => 'destroyMessage')); ?>",
-                data: { messageId: messageId },
+                url: form.attr('action'),
+                data: formData,
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        removeMessage(messageId);
-                        console.log('Message deleted successfully');
-                    } else {
-                        console.error('Failed to delete message');
+                        var newMessage = response.replyMessage;
+                        var formattedDate = formatDateTime(newMessage['created']);
+                        var messageHtml = '<div id="message-' + newMessage['id'] + '">' +
+                            '<img src="<?php echo $this->webroot; ?>/img/uploads/' + newMessage['sender_img'] + '" alt="Profile Image" width="50" height="50">' +
+                            '<p>' + newMessage['sender_name'] + '</p>' +
+                            '<p>' + newMessage['text'] + '</p>' +
+                            '<p>Sent at: ' + formattedDate + '</p>' +
+                            '<button class="destroy-message-btn" data-message-id="' + newMessage['id'] + '">Destroy</button>' +
+                            '</div>';
+                        $('.messages-container').prepend(messageHtml);
+
+                        form.find('textarea[name="data[Message][text]"]').val('');
+                        var container = $('.messages-container');
+                        container.scrollTop(container[0].scrollHeight);
                     }
                 },
-                error: function(xhr, status, error) {
-                    console.error('Error:', status, error);
+                error: function(error) {
+                    // エラー処理
                 }
             });
-        }
+        });
+
+        $(document).on('click', '.destroy-message-btn', function(event) {
+            event.preventDefault();
+
+            if (confirmDelete()) {
+                var messageId = $(this).data('message-id');
+                var messageContainer = $('#message-' + messageId);
+
+                $.ajax({
+                    type: 'POST',
+                    url: "<?php echo $this->Html->url(array('controller' => 'messages', 'action' => 'destroyMessage')); ?>",
+                    data: { messageId: messageId },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            removeMessage(messageId);
+                            console.log('Message deleted successfully');
+                        } else {
+                            console.error('Failed to delete message');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', status, error);
+                    }
+                });
+            }
+        });
     });
-});
+
 
 
     function confirmDelete() {
