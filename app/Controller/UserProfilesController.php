@@ -7,38 +7,72 @@ class UserProfilesController extends AppController {
 
     public function new() {
         $this->set('userName', $this->setUserName());
-    }
-
-    public function create() {
+    
         if ($this->request->is('post')) {
+            $this->loadModel('User');
             $userId = $this->Auth->user('id');
-
-            $image = $this->handleImageUpload();
-            $this->request->data['UserProfile']['user_id'] = $userId;
-            $this->request->data['UserProfile']['img'] = $image;
-
-            $this->request->data['User']['id'] = $userId;
-            $this->request->data['User']['name'] = $this->request->data['User']['name'];
-
-            $this->User->begin();
-
+    
             try {
-                if ($this->UserProfile->save($this->request->data['UserProfile']) &&
-                    $this->User->save($this->request->data['User'])) {
+                $this->User->begin();
+    
+                $image = $this->handleImageUpload();
+    
+                $userData = array(
+                    'User' => array(
+                        'id' => $userId,
+                        'name' => $this->request->data['User']['name']
+                    )
+                );
+                $profileData = array(
+                    'UserProfile' => array(
+                        'user_id' => $userId,
+                        'img' => $image,
+                        'gender' => $this->request->data['UserProfile']['gender'], 
+                        'birthday' => $this->request->data['UserProfile']['birthday'],
+                        'hobby' => $this->request->data['UserProfile']['hobby']
+                    )
+                );
+    
+                $this->User->set($userData);
+                if ($this->User->validates()) {
+    
+                    $this->UserProfile->set($profileData);
+                    if ($this->UserProfile->validates()) {
+                        if ($this->User->saveAssociated($userData, array('deep' => true, 'atomic' => false))) {
+                            $this->User->commit();
+                            $this->UserProfile->save($profileData);
+                            $this->Flash->success('Profile created successfully.');
+                            $this->log($profileData, 'debug');
 
-                    $this->User->commit();
-                    $this->Flash->success('Profile created successfully.');
-                    $this->redirect(array('controller' => 'userprofiles', 'action' => 'show'));
+                            $this->redirect(array('controller' => 'userprofiles', 'action' => 'show'));
+                        } else {
+                            $this->User->rollback();
+                            $this->Flash->error('Failed to create profile.');
+                        }
+                    } else {
+                        $validationErrors = $this->UserProfile->validationErrors;
+                        
+                        if (isset($validationErrors['img']) && is_array($validationErrors['img'])) {
+                            foreach ($validationErrors['img'] as $error) {
+                                $this->Flash->error($error);
+                            }
+                        } else {
+                            //do nothing
+                        }
+                    }
+    
                 } else {
-                    $this->User->rollback();
-                    $this->Flash->error('Failed to create profile.');
+                    //do nothing
                 }
+    
             } catch (Exception $e) {
                 $this->User->rollback();
                 $this->Flash->error('Failed to create profile.');
             }
         }
     }
+    
+    
 
     public function show() {
         $userProfile = $this->setUserProfile();
