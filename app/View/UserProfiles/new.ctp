@@ -1,4 +1,6 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script>
 $(document).ready(function(){
     $("#imageInput").change(function(){
@@ -17,6 +19,11 @@ $(document).ready(function(){
             reader.readAsDataURL(input.files[0]);
         }
     }
+});
+</script>
+<script>
+$(document).ready(function(){
+    $('.datepicker').datepicker();
 });
 </script>
 
@@ -39,7 +46,7 @@ echo $this->Form->create('UserProfile', array(
         'female' => 'Female',
         'other' => 'Other'
     ))); ?>
-    <?php echo $this->Form->input('birthday', array('type' => 'date')); ?>
+    <?php echo $this->Form->input('birthday', array('type' => 'text', 'class' => 'datepicker')); ?>
     <?php echo $this->Form->input('hobby', array('type' => 'text')); ?>
 </fieldset>
 
